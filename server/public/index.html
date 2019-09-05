@@ -1,32 +1,53 @@
 <!DOCTYPE html>
 <head>
     <title>WebRTC - Web Real Time Communication</title>
-    <style>
+    <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
 
-    </style>
 </head>
 <body>
-    <h1>WebRTC - Web Real Time Communication</h1>
+<div id="selectRoom">
+    <div class="select-room-wrapper">
+        <div class="container">
+            <div class="row justify-content-md-center">
+                <div class="col-xl-4 col-lg-5 col-md-6 col-sm-12">
+                    <div class="select-room-form">
+                        <div class="select-room-form-box">
+                            <img class="select-room-logo" src="/images/logo.svg" alt="">
+                            <h5>Create or join a room:</h5>
 
-    <div id="selectRoom">
-        <label>Create or join a room:</label>
-        <input id="roomNumber" type="text" />
-        <button id="goRoom">Go</button>
-    </div>
+                            <div>
+                                <input class="form-field mb-3" id="roomNumber" type="text" placeholder="Enter Room Name"/>
+                                <button id="goRoom" class="button button-primary button-block uppercase">Go</button>
+                            </div>
 
-    <div id="consultingRoom" style="display:none" class="container">
-        <video id="localVideo" autoplay></video>
-        <video id="remoteVideo" autoplay></video>
-    </div>
+                            <div class="mt-5">
+                                <p>Developed by <a href="">Dusan</a>.</p>
+                            </div>
 
-    <div id="chat">
-      <p>Send a message to other user</p>
-      <div id="messages" style="border: 1px solid #888; width: 640px;height: 320px; overflow: auto">
-      </div>
-      <div id="textAreaContainer">
-        <textarea placeholder="Type your message here..." name="Chat" id="textArea" cols="30" rows="5" style="outline: none"></textarea>
-      </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"></script>
-    <script src="client.js"></script>
+</div>
+
+<div id="consultingRoom" style="display:none" class="container">
+    <video id="localVideo" autoplay></video>
+    <video id="remoteVideo" autoplay></video>
+</div>
+
+<div id="chat" style="display:none">
+    <p>Send a message to other user</p>
+    <div id="messages" style="border: 1px solid #888; width: 640px;height: 320px; overflow: auto">
+    </div>
+    <div id="textAreaContainer">
+        <textarea placeholder="Type your message here..." name="Chat" id="textArea" cols="30" rows="5"
+                  style="outline: none"></textarea>
+    </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"></script>
+<script src="client.js"></script>
 </body>

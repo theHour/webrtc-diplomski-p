@@ -1,0 +1,107 @@
+html, body {
+    font-family: 'Raleway', sans-serif;
+    height: 100%;
+}
+
+a {
+    color: inherit;
+}
+
+a:hover {
+    color: #7f8ff4;
+}
+
+
+.uppercase {
+    text-transform: uppercase;
+}
+
+.button {
+    display: inline-block;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    border: 0;
+    outline: 0;
+    padding: 0;
+    transition: all 200ms ease-in;
+    cursor: pointer;
+}
+
+.button-primary {
+    background: #573687;
+    color: #fff;
+    box-shadow: 0 0 10px 2px rgba(0, 0, 0, .1);
+    border-radius: 2px;
+    padding: 12px 36px;
+}
+
+.button-primary:hover {
+    background: #aa6ff5;
+}
+
+.button-primary:active {
+    background: #964cf5;
+    box-shadow: inset 0 0 10px 2px rgba(0, 0, 0, .2);
+}
+
+.button-block {
+    display: block;
+    width: 100%;
+}
+
+.form-field {
+    width: 100%;
+    background: #fff;
+    color: #a3a3a3;
+    font: inherit;
+    box-shadow: 0 6px 22px 0 rgba(0, 0, 0, .1);
+    border: 0;
+    outline: 0;
+    padding: 22px 18px;
+}
+
+
+.select-room-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background: url("/images/bg.jpg");
+    background-attachment: fixed;
+    background-size: cover;
+    background-position: bottom center;
+}
+
+.select-room-form {
+    position: relative;
+    background: #ffffff;
+    margin: 60px auto;
+    -webkit-border-radius: 18px;
+    -moz-border-radius: 18px;
+    border-radius: 18px;
+    text-align: center;
+}
+
+.select-room-form-box {
+    padding: 1.5rem;
+}
+
+.select-room-form-box h5 {
+    margin: 0 0 1rem 0;
+    font-weight: 400;
+    color: #98949c;
+    font-size: 1rem;
+    line-height: 150%;
+    font-family: 'Raleway', sans-serif;
+}
+
+.select-room-logo {
+    margin: 1rem 0 2rem 0;
+    display: inline-block;
+    font-size: 2.5rem;
+    color: #616a71;
+    font-weight: 700;
+    transition: all 0.5s ease;
+    height: 200px;
+}
