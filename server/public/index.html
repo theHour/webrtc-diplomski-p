@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<head>
+    <title>WebRTC - Web Real Time Communication</title>
+    <style>
+
+    </style>
+</head>
+<body>
+    <h1>WebRTC - Web Real Time Communication</h1>
+
+    <div id="selectRoom">
+        <label>Create or join a room:</label>
+        <input id="roomNumber" type="text" />
+        <button id="goRoom">Go</button>
+    </div>
+
+    <div id="consultingRoom" style="display:none" class="container">
+        <video id="localVideo" autoplay></video>
+        <video id="remoteVideo" autoplay></video>
+    </div>
+
+    <div id="chat">
+      <p>Send a message to other user</p>
+      <div id="messages" style="border: 1px solid #888; width: 640px;height: 320px; overflow: auto">
+      </div>
+      <div id="textAreaContainer">
+        <textarea placeholder="Type your message here..." name="Chat" id="textArea" cols="30" rows="5" style="outline: none"></textarea>
+      </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"></script>
+    <script src="client.js"></script>
+</body>
