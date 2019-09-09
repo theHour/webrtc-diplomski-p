@@ -3,12 +3,25 @@ html, body {
     height: 100%;
 }
 
+body {
+    background: url("/images/bg.jpg");
+    background-attachment: fixed;
+    background-size: cover;
+    background-position: bottom center;
+}
+
 a {
     color: inherit;
 }
 
 a:hover {
     color: #7f8ff4;
+}
+
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
 }
 
 .uppercase {
@@ -65,10 +78,6 @@ a:hover {
     align-items: center;
     justify-content: center;
     height: 100vh;
-    background: url("/images/bg.jpg");
-    background-attachment: fixed;
-    background-size: cover;
-    background-position: bottom center;
 }
 
 .select-room-form {
@@ -145,7 +154,7 @@ a:hover {
 }
 
 .chat-container li .chat-avatar {
-    margin-right: 10px;
+    margin-right: 20px;
 }
 
 .chat-container li.chat-right {
@@ -285,6 +294,7 @@ a:hover {
     margin: 3rem auto 2rem auto;
     padding: 0;
     box-shadow: 0 30px 80px rgba(0, 0, 0, 0.2);
+    border-radius: 10px 10px 0 0;
 }
 
 .main-container .page-title {
@@ -347,7 +357,6 @@ a:hover {
     box-shadow: none;
 }
 
-
 .chat-container::before {
     display: flex;
     align-items: center;
@@ -357,4 +366,38 @@ a:hover {
     background-attachment: fixed;
     background-size: cover;
     background-position: bottom center;
+}
+
+.content-wrapper {
+    padding: 2.5rem 1.5rem;
+    background: #ffffff;
+    -webkit-border-radius: 0 0 18px 18px;
+    -moz-border-radius: 0 0 18px 18px;
+    border-radius: 0 0 18px 18px;
+    min-height: 330px;
+}
+
+@media (min-width: 1200px) {
+    .container {
+        max-width: 90%;
+    }
+}
+
+
+@media (min-width: 992px) {
+    .container {
+        max-width: 90%;
+    }
+}
+
+@media (min-width: 768px) {
+    .container {
+        max-width: 90%;
+    }
+}
+
+@media (min-width: 576px) {
+    .container {
+        max-width: 90%;
+    }
 }

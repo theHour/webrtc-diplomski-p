@@ -22,14 +22,14 @@ currentDate.innerText = today;
 
 textArea.addEventListener('keypress', event => {
   if (event.keyCode === 13) {
-    messages.innerHTML += `<li class="chat-right">
-        <div class="chat-avatar">
-            <img src="/images/avatar-1.png" alt="YOU">
-            <div class="chat-name">YOU</div>
-        </div>
-        <div class="chat-text">${textArea.value.trim()}</div>
-        <div class="chat-hour"><span class="icon-done_all"></span></div>
-    </li>`
+    messages.innerHTML += `
+       <li class="chat-right">									
+            <div class="chat-text">${textArea.value.trim()}</div>
+            <div class="chat-avatar">
+                <img src="/images/avatar-1.png" alt="YOU">
+                <div class="chat-name">YOU</div>
+            </div>
+        </li>`;
     if (isCaller) {
       dataChannel.send(textArea.value.trim())
     } else {
