@@ -7,6 +7,7 @@ var localVideo = document.getElementById("localVideo");
 var remoteVideo = document.getElementById("remoteVideo");
 var chartArea = document.getElementById('chat');
 var currentDate = document.getElementById('current-date');
+var hangUp = document.getElementById("hangUpButton");
 
 const textArea = document.getElementById("textArea");
 const messages = document.getElementById("messages");
@@ -21,8 +22,8 @@ currentDate.innerText = today;
 
 
 textArea.addEventListener('keypress', event => {
-  if (event.keyCode === 13) {
-    messages.innerHTML += `
+    if (event.keyCode === 13) {
+        messages.innerHTML += `
        <li class="chat-right">									
             <div class="chat-text">${textArea.value.trim()}</div>
             <div class="chat-avatar">
@@ -30,14 +31,15 @@ textArea.addEventListener('keypress', event => {
                 <div class="chat-name">YOU</div>
             </div>
         </li>`;
-    if (isCaller) {
-      dataChannel.send(textArea.value.trim())
-    } else {
-      receiveChannel.send(textArea.value.trim())
-    }
-    textArea.value = ''
+        messages.scrollTop = messages.scrollHeight
+        if (isCaller) {
+            dataChannel.send(textArea.value.trim())
+        } else {
+            receiveChannel.send(textArea.value.trim())
+        }
+        textArea.value = ''
 
-  }
+    }
 })
 
 // variables
@@ -52,11 +54,11 @@ var iceServers = {
     ]
 }
 var streamConstraints = {
-  audio: true,
-  video: {
-    width: 640,
-    height: 320
-  }
+    audio: true,
+    video: {
+        width: 640,
+        height: 320
+    }
 };
 var isCaller;
 
@@ -74,6 +76,11 @@ btnGoRoom.onclick = function () {
         chartArea.style = "display: block";
     }
 };
+
+hangUp.onclick = function () {
+    rtcPeerConnection.close();
+    socket.emit('leave', roomNumber);
+}
 
 // message handlers
 socket.on('created', function (room) {
@@ -158,6 +165,17 @@ socket.on('answer', function (event) {
     rtcPeerConnection.setRemoteDescription(new RTCSessionDescription(event));
 })
 
+socket.on('full', function (event) {
+    divSelectRoom.style = "display: block;";
+    divConsultingRoom.style = "display: none;";
+    chartArea.style = "display: none";
+    alert(`Room is full. Please enter another room id.`)
+})
+
+socket.on('left', function (event) {
+    rtcPeerConnection.close();
+})
+
 // handler functions
 function onIceCandidate(event) {
     if (event.candidate) {
@@ -178,27 +196,27 @@ function onAddStream(event) {
 }
 
 function handleSendChannelStatusChange(event) {
-  if (dataChannel) {
-    var state = dataChannel.readyState;
+    if (dataChannel) {
+        var state = dataChannel.readyState;
 
-    if (state === "open") {
-      console.log('data channel opened')
-    } else {
-      console.log('data channel something went wrong :O')
+        if (state === "open") {
+            console.log('data channel opened')
+        } else {
+            console.log('data channel something went wrong :O')
+        }
     }
-  }
 }
 
 function receiveChannelCallback(event) {
-  receiveChannel = event.channel;
-  receiveChannel.onmessage = handleReceiveMessage;
-  receiveChannel.onopen = handleReceiveChannelStatusChange;
-  receiveChannel.onclose = handleReceiveChannelStatusChange;
+    receiveChannel = event.channel;
+    receiveChannel.onmessage = handleReceiveMessage;
+    receiveChannel.onopen = handleReceiveChannelStatusChange;
+    receiveChannel.onclose = handleReceiveChannelStatusChange;
 }
 
 function handleReceiveMessage(event) {
-  console.log(`message received: `, event.data)
-  messages.innerHTML += `<li class="chat-left">
+    console.log(`message received: `, event.data)
+    messages.innerHTML += `<li class="chat-left">
         <div class="chat-avatar">
             <img src="/images/avatar-2.png" alt="ANON">
             <div class="chat-name">ANON</div>
@@ -206,14 +224,15 @@ function handleReceiveMessage(event) {
         <div class="chat-text">${event.data}</div>
         <div class="chat-hour"><span class="icon-done_all"></span></div>
     </li>`;
-  textArea.value = ''
+    textArea.value = '';
+    messages.scrollTop = messages.scrollHeight
 }
 
 function handleReceiveChannelStatusChange(event) {
-  if (receiveChannel) {
-    console.log("Receive channel's status has changed to " +
-                receiveChannel.readyState);
-  }
+    if (receiveChannel) {
+        console.log("Receive channel's status has changed to " +
+            receiveChannel.readyState);
+    }
 }
 
 function sendMessageCaller() {
