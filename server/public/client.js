@@ -5,13 +5,31 @@ var inputRoomNumber = document.getElementById("roomNumber");
 var btnGoRoom = document.getElementById("goRoom");
 var localVideo = document.getElementById("localVideo");
 var remoteVideo = document.getElementById("remoteVideo");
+var chartArea = document.getElementById('chat');
+var currentDate = document.getElementById('current-date');
 
-const textArea = document.getElementById("textArea")
-const messages = document.getElementById("messages")
+const textArea = document.getElementById("textArea");
+const messages = document.getElementById("messages");
+
+var today = new Date();
+var dd = String(today.getDate()).padStart(2, '0');
+var mm = String(today.getMonth() + 1).padStart(2, '0');
+var yyyy = today.getFullYear();
+
+today = mm + '/' + dd + '/' + yyyy;
+currentDate.innerText = today;
+
 
 textArea.addEventListener('keypress', event => {
   if (event.keyCode === 13) {
-    messages.innerHTML += `<p>YOU: ${textArea.value.trim()}</>`
+    messages.innerHTML += `<li class="chat-right">
+        <div class="chat-avatar">
+            <img src="/images/avatar-1.png" alt="YOU">
+            <div class="chat-name">YOU</div>
+        </div>
+        <div class="chat-text">${textArea.value.trim()}</div>
+        <div class="chat-hour"><span class="icon-done_all"></span></div>
+    </li>`
     if (isCaller) {
       dataChannel.send(textArea.value.trim())
     } else {
@@ -53,6 +71,7 @@ btnGoRoom.onclick = function () {
         socket.emit('create or join', roomNumber);
         divSelectRoom.style = "display: none;";
         divConsultingRoom.style = "display: block;";
+        chartArea.style = "display: block";
     }
 };
 
@@ -161,7 +180,7 @@ function onAddStream(event) {
 function handleSendChannelStatusChange(event) {
   if (dataChannel) {
     var state = dataChannel.readyState;
-  
+
     if (state === "open") {
       console.log('data channel opened')
     } else {
@@ -179,7 +198,14 @@ function receiveChannelCallback(event) {
 
 function handleReceiveMessage(event) {
   console.log(`message received: `, event.data)
-  messages.innerHTML += `<p>ANON: ${event.data}</>`
+  messages.innerHTML += `<li class="chat-left">
+        <div class="chat-avatar">
+            <img src="/images/avatar-2.png" alt="ANON">
+            <div class="chat-name">ANON</div>
+        </div>
+        <div class="chat-text">${event.data}</div>
+        <div class="chat-hour"><span class="icon-done_all"></span></div>
+    </li>`;
   textArea.value = ''
 }
 
