@@ -43,10 +43,10 @@ textArea.addEventListener('keypress', event => {
 })
 
 // variables
-var roomNumber;
-var localStream;
-var remoteStream;
-var rtcPeerConnection, dataChannel, receiveChannel;
+let roomNumber;
+let localStream;
+let remoteStream;
+let rtcPeerConnection, dataChannel, receiveChannel;
 var iceServers = {
     'iceServers': [
         { 'urls': 'stun:stun.services.mozilla.com' },
@@ -118,6 +118,10 @@ socket.on('ready', function () {
         dataChannel.onopen = handleSendChannelStatusChange;
         dataChannel.onclose = handleSendChannelStatusChange;
         dataChannel.onmessage = handleReceiveMessage;
+        sendFileChannel = rtcPeerConnection.createDataChannel("sendDataChannel")
+        sendFileChannel.onopen = handleSendChannelStatusChange;
+        sendFileChannel.onclose = handleSendChannelStatusChange;
+        sendFileChannel.onmessage = handleReceiveMessage;        
         rtcPeerConnection.onicecandidate = onIceCandidate;
         rtcPeerConnection.ontrack = onAddStream;
         rtcPeerConnection.addTrack(localStream.getTracks()[0], localStream);
@@ -224,7 +228,10 @@ function receiveChannelCallback(event) {
 }
 
 function handleReceiveMessage(event) {
-    console.log(`message received: `, event.data)
+    if (event.target.label === 'sendDataChannel') {
+        onReceiveFileMessageCallback(event)
+    } else {
+        console.log(`message received: `, event.data)
     messages.innerHTML += `<li class="chat-left">
         <div class="chat-avatar">
             <img src="/images/avatar-2.png" alt="ANON">
@@ -235,6 +242,7 @@ function handleReceiveMessage(event) {
     </li>`;
     textArea.value = '';
     messages.scrollTop = messages.scrollHeight
+    }
 }
 
 function handleReceiveChannelStatusChange(event) {
@@ -286,26 +294,27 @@ async function handleFileInputChange() {
 async function createConnection() {
     abortButton.disabled = false;
     sendFileButton.disabled = true;
-
-    sendFileChannel = rtcPeerConnection.createDataChannel('sendDataChannel');
-    sendFileChannel.binaryType = 'arraybuffer';
-    console.log('Created send data channel');
-
-    sendFileChannel.addEventListener('open', onSendFileChannelStateChange);
-    sendFileChannel.addEventListener('close', onSendFileChannelStateChange);
-    sendFileChannel.addEventListener('error', error => console.error('Error in sendChannel:', error));
-
+    console.log(`Sending file data.`)
+    sendData();
     fileInput.disabled = true;
 }
 
 function sendData() {
+    if (isCaller) {
+        sendChannelData(sendFileChannel);
+    } else {
+        sendChannelData(receiveFileChannel);
+    }
+}
+
+function sendChannelData(channel) {
     const file = fileInput.files[0];
     console.log(`File is ${[file.name, file.size, file.type, file.lastModified].join(' ')}`);
 
     // Handle 0 size files.
     downloadAnchor.textContent = '';
     if (file.size === 0) {
-        closeDataChannels();
+        alert(`Please select a file before sending.`)
         return;
     }
     const chunkSize = 16384;
@@ -315,10 +324,13 @@ function sendData() {
     fileReader.addEventListener('abort', event => console.log('File reading aborted:', event));
     fileReader.addEventListener('load', e => {
         console.log('FileRead.onload ', e);
-        sendFileChannel.send(e.target.result);
+        channel.send(e.target.result);
         offset += e.target.result.byteLength;
         if (offset < file.size) {
             readSlice(offset);
+        } else {
+            sendFileButton.disabled = false;
+            fileInput.disabled = false;
         }
     });
     const readSlice = o => {
@@ -330,21 +342,13 @@ function sendData() {
 }
 
 function closeDataChannels() {
-    console.log('Closing data channels');
-    sendFileChannel.close();
-    console.log(`Closed data channel with label: ${sendChannel.label}`);
-    if (receiveFileChannel) {
-        receiveChannel.close();
-        console.log(`Closed data channel with label: ${receiveChannel.label}`);
-    }
     // re-enable the file select
     fileInput.disabled = false;
-    abortButton.disabled = true;
     sendFileButton.disabled = false;
 }
 
 
-function receiveFileChannelCallback(event) {
+function receiveFileChannelCallback( event) {
     console.log('Receive Channel Callback');
     receiveFileChannel = event.channel;
     receiveFileChannel.binaryType = 'arraybuffer';
@@ -377,7 +381,6 @@ function onReceiveFileMessageCallback(event) {
             `Click to download '${name}' (${fileSize} bytes)`;
         downloadAnchor.style.display = 'block';
         fileSize = 0;
-        closeDataChannels();
     }
 }
 
