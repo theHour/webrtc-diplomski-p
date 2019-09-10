@@ -25,8 +25,6 @@ io.on('connection', function (socket) {
             socket.emit('created', room);
         } else if (numClients == 1) {
             socket.join(room);
-            console.log(myRoom)
-            console.log(socket)
             socket.emit('joined', room);
         } else {
             socket.emit('full', room);
@@ -50,6 +48,7 @@ io.on('connection', function (socket) {
     });
 
     socket.on('expected', function(event) {
+        console.log(`expected file size: ${event.fileSize} ; name: ${event.name}`)
         socket.broadcast.to(event.room).emit('file', {fileSize: event.fileSize, name: event.name})
     })
 

@@ -79,10 +79,12 @@ btnGoRoom.onclick = function () {
 
 hangUp.onclick = function () {
     rtcPeerConnection.close();
+    rtcPeerConnection = null;
     socket.emit('leave', roomNumber);
+    window.alert(`You are leaving the room and you will be redirected to landing page!`);
+    window.location.reload();
 }
 
-// message handlers
 socket.on('created', function (room) {
     navigator.mediaDevices.getUserMedia(streamConstraints).then(function (stream) {
         localStream = stream;
@@ -178,6 +180,9 @@ socket.on('full', function (event) {
 
 socket.on('left', function (event) {
     rtcPeerConnection.close();
+    rtcPeerConnection = null;
+    alert(`Peer left the room. You will be redirected to landing page!`)
+    window.location.reload();
 })
 
 socket.on('file', function (event) {
