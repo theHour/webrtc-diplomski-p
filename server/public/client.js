@@ -176,6 +176,11 @@ socket.on('left', function (event) {
     rtcPeerConnection.close();
 })
 
+socket.on('file', function (event) {
+    fileSize = event.fileSize;
+    name = event.name;
+});
+
 // handler functions
 function onIceCandidate(event) {
     if (event.candidate) {
@@ -208,10 +213,14 @@ function handleSendChannelStatusChange(event) {
 }
 
 function receiveChannelCallback(event) {
-    receiveChannel = event.channel;
-    receiveChannel.onmessage = handleReceiveMessage;
-    receiveChannel.onopen = handleReceiveChannelStatusChange;
-    receiveChannel.onclose = handleReceiveChannelStatusChange;
+    if (event.channel.label === 'sendDataChannel') {
+        receiveFileChannelCallback(event);
+    } else {
+        receiveChannel = event.channel;
+        receiveChannel.onmessage = handleReceiveMessage;
+        receiveChannel.onopen = handleReceiveChannelStatusChange;
+        receiveChannel.onclose = handleReceiveChannelStatusChange;
+    }
 }
 
 function handleReceiveMessage(event) {
@@ -235,10 +244,152 @@ function handleReceiveChannelStatusChange(event) {
     }
 }
 
-function sendMessageCaller() {
 
+///file transfer
+const fileInput = document.querySelector('input#fileInput');
+const abortButton = document.querySelector('button#abortButton');
+const sendFileButton = document.querySelector('button#sendFile');
+
+let sendFileChannel;
+let receiveFileChannel;
+let fileReader;
+const downloadAnchor = document.querySelector('a#download');
+let receiveBuffer = [];
+let receivedSize = 0;
+let fileSize = 0;
+let name = '';
+
+sendFileButton.addEventListener('click', () => createConnection());
+fileInput.addEventListener('change', handleFileInputChange, false);
+abortButton.addEventListener('click', () => {
+    if (fileReader && fileReader.readyState === 1) {
+        console.log('Abort read!');
+        fileReader.abort();
+    }
+});
+
+async function handleFileInputChange() {
+    let file = fileInput.files[0];
+    if (!file) {
+        console.log('No file chosen');
+    } else {
+        socket.emit('expected', {
+            room: roomNumber,
+            fileSize: file.size,
+            name: file.name
+        })
+        sendFileButton.disabled = false;
+    }
 }
 
-function sendMessageReceiver() {
 
+async function createConnection() {
+    abortButton.disabled = false;
+    sendFileButton.disabled = true;
+
+    sendFileChannel = rtcPeerConnection.createDataChannel('sendDataChannel');
+    sendFileChannel.binaryType = 'arraybuffer';
+    console.log('Created send data channel');
+
+    sendFileChannel.addEventListener('open', onSendFileChannelStateChange);
+    sendFileChannel.addEventListener('close', onSendFileChannelStateChange);
+    sendFileChannel.addEventListener('error', error => console.error('Error in sendChannel:', error));
+
+    fileInput.disabled = true;
+}
+
+function sendData() {
+    const file = fileInput.files[0];
+    console.log(`File is ${[file.name, file.size, file.type, file.lastModified].join(' ')}`);
+
+    // Handle 0 size files.
+    downloadAnchor.textContent = '';
+    if (file.size === 0) {
+        closeDataChannels();
+        return;
+    }
+    const chunkSize = 16384;
+    fileReader = new FileReader();
+    let offset = 0;
+    fileReader.addEventListener('error', error => console.error('Error reading file:', error));
+    fileReader.addEventListener('abort', event => console.log('File reading aborted:', event));
+    fileReader.addEventListener('load', e => {
+        console.log('FileRead.onload ', e);
+        sendFileChannel.send(e.target.result);
+        offset += e.target.result.byteLength;
+        if (offset < file.size) {
+            readSlice(offset);
+        }
+    });
+    const readSlice = o => {
+        console.log('readSlice ', o);
+        const slice = file.slice(offset, o + chunkSize);
+        fileReader.readAsArrayBuffer(slice);
+    };
+    readSlice(0);
+}
+
+function closeDataChannels() {
+    console.log('Closing data channels');
+    sendFileChannel.close();
+    console.log(`Closed data channel with label: ${sendChannel.label}`);
+    if (receiveFileChannel) {
+        receiveChannel.close();
+        console.log(`Closed data channel with label: ${receiveChannel.label}`);
+    }
+    // re-enable the file select
+    fileInput.disabled = false;
+    abortButton.disabled = true;
+    sendFileButton.disabled = false;
+}
+
+
+function receiveFileChannelCallback(event) {
+    console.log('Receive Channel Callback');
+    receiveFileChannel = event.channel;
+    receiveFileChannel.binaryType = 'arraybuffer';
+    receiveFileChannel.onmessage = onReceiveFileMessageCallback;
+    receiveFileChannel.onopen = onReceiveFileChannelStateChange;
+    receiveFileChannel.onclose = onReceiveFileChannelStateChange;
+
+    downloadAnchor.textContent = '';
+    downloadAnchor.removeAttribute('download');
+    if (downloadAnchor.href) {
+        URL.revokeObjectURL(downloadAnchor.href);
+        downloadAnchor.removeAttribute('href');
+    }
+}
+
+function onReceiveFileMessageCallback(event) {
+    console.log(`Received Message ${event.data.byteLength}`);
+    receiveBuffer.push(event.data);
+    receivedSize += event.data.byteLength;
+
+    // we are assuming that our signaling protocol told
+    // about the expected file size (and name, hash, etc).
+    if (receivedSize === fileSize) {
+        const received = new Blob(receiveBuffer);
+        receiveBuffer = [];
+
+        downloadAnchor.href = URL.createObjectURL(received);
+        downloadAnchor.download = name;
+        downloadAnchor.textContent =
+            `Click to download '${name}' (${fileSize} bytes)`;
+        downloadAnchor.style.display = 'block';
+        fileSize = 0;
+        closeDataChannels();
+    }
+}
+
+function onSendFileChannelStateChange() {
+    const readyState = sendFileChannel.readyState;
+    console.log(`Send channel state is: ${readyState}`);
+    if (readyState === 'open') {
+        sendData();
+    }
+}
+
+async function onReceiveFileChannelStateChange() {
+    const readyState = receiveFileChannel.readyState;
+    console.log(`Receive channel state is: ${readyState}`);
 }

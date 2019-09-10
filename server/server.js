@@ -49,6 +49,10 @@ io.on('connection', function (socket) {
         socket.broadcast.to(event.room).emit('answer',event.sdp);
     });
 
+    socket.on('expected', function(event) {
+        socket.broadcast.to(event.room).emit('file', {fileSize: event.fileSize, name: event.name})
+    })
+
     socket.on('leave', function (room) {
         socket.leave(room);
         console.log('left the room');

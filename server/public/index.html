@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <head>
     <title>WebRTC - Web Real Time Communication</title>
     <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
@@ -6,75 +7,85 @@
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/css/font-awesome-4.7.0/css/font-awesome.min.css">
 </head>
+
 <body>
-<div id="selectRoom">
-    <div class="select-room-wrapper">
+    <div id="selectRoom">
+        <div class="select-room-wrapper">
+            <div class="container">
+                <div class="row justify-content-md-center">
+                    <div class="col-xl-4 col-lg-5 col-md-6 col-sm-12">
+                        <div class="select-room-form">
+                            <div class="select-room-form-box">
+                                <img class="select-room-logo" src="/images/logo.svg" alt="">
+                                <h5>Create or join a room:</h5>
+
+                                <div>
+                                    <input class="form-field mb-3" id="roomNumber" type="text"
+                                        placeholder="Enter Room Name" />
+                                    <button id="goRoom" class="button button-primary button-block uppercase">Go</button>
+                                </div>
+
+                                <div class="mt-5">
+                                    <p>Developed by <a href="">Dusan Djukic</a>.</p>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="chat" class="chat-container" style="display:none">
         <div class="container">
-            <div class="row justify-content-md-center">
-                <div class="col-xl-4 col-lg-5 col-md-6 col-sm-12">
-                    <div class="select-room-form">
-                        <div class="select-room-form-box">
-                            <img class="select-room-logo" src="/images/logo.svg" alt="">
-                            <h5>Create or join a room:</h5>
-
-                            <div>
-                                <input class="form-field mb-3" id="roomNumber" type="text"
-                                       placeholder="Enter Room Name"/>
-                                <button id="goRoom" class="button button-primary button-block uppercase">Go</button>
+            <div class="main-container">
+                <div class="page-title">
+                    <div class="row gutters">
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
+                            <h5 class="title">WebRTC - Web Real Time Communication</h5>
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
+                            <div class="date">
+                                <i class="fa fa-calendar" aria-hidden="true"></i>
+                                <span class="current-date" id="current-date"></span>
                             </div>
-
-                            <div class="mt-5">
-                                <p>Developed by <a href="">Dusan Djukic</a>.</p>
-                            </div>
-
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
-</div>
+                <div class="content-wrapper">
+                    <div class="row gutters">
 
-<div id="chat" class="chat-container" style="display:none">
-    <div class="container" >
-        <div class="main-container">
-            <div class="page-title">
-                <div class="row gutters">
-                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
-                        <h5 class="title">WebRTC - Web Real Time Communication</h5>
-                    </div>
-                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
-                        <div class="date">
-                            <i class="fa fa-calendar" aria-hidden="true"></i>
-                            <span class="current-date" id="current-date"></span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="content-wrapper">
-                <div class="row gutters">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
 
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                            <div class="card m-0">
 
-                        <div class="card m-0">
-
-                            <div class="row no-gutters">
-                                <div class="col-xl-7 col-lg-7 col-md-7 col-sm-8 col-8">
-                                    <div class="chat-container">
-                                        <ul class="chat-box" id="messages">
-                                        </ul>
-                                        <div class="form-group mt-3 mb-0">
-                                            <textarea class="form-control" name="Chat" id="textArea"
-                                                      rows="3"></textarea>
+                                <div class="row no-gutters">
+                                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-8 col-8">
+                                        <div class="chat-container">
+                                            <ul class="chat-box" id="messages">
+                                            </ul>
+                                            <div>
+                                                <form id="fileInfo">
+                                                    <input type="file" id="fileInput" name="files" />
+                                                </form>
+                                                <button disabled id="sendFile">Send</button>
+                                                <button disabled id="abortButton">Abort</button>
+                                            </div>
+                                            <a id="download"></a>
+                                            <div class="form-group mt-3 mb-0">
+                                                <textarea class="form-control" name="Chat" id="textArea"
+                                                    rows="3"></textarea>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="col-xl-5 col-lg-5 col-md-5 col-sm-4 col-4">
-                                    <div class="users-container">
-                                        <div id="consultingRoom" style="display:none">
-                                            <video class="video" id="localVideo" autoplay></video>
-                                            <video class="video" id="remoteVideo" autoplay></video>
-                                            <button id="hangUpButton">Hang up</button>
+                                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-4 col-4">
+                                        <div class="users-container">
+                                            <div id="consultingRoom" style="display:none">
+                                                <video class="video" id="localVideo" autoplay></video>
+                                                <video class="video" id="remoteVideo" autoplay></video>
+                                                <button id="hangUpButton">Hang up</button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -85,7 +96,6 @@
             </div>
         </div>
     </div>
-</div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"></script>
-<script src="client.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"></script>
+    <script src="client.js"></script>
 </body>
