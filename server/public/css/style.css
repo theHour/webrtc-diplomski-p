@@ -31,13 +31,14 @@ ul {
 .button {
     display: inline-block;
     background: transparent;
-    color: inherit;
     font: inherit;
     border: 0;
     outline: 0;
     padding: 0;
     transition: all 200ms ease-in;
     cursor: pointer;
+    color: #fff;
+    font-weight: 600;
 }
 
 .button-primary {
@@ -60,6 +61,23 @@ ul {
 .button-block {
     display: block;
     width: 100%;
+}
+
+.button-danger {
+    background: #bb1f59;
+    color: #fff;
+    box-shadow: 0 0 10px 2px rgba(0, 0, 0, .1);
+    border-radius: 2px;
+    padding: 12px 36px;
+}
+
+.button-danger:active {
+    background: #b9164a;
+    box-shadow: inset 0 0 10px 2px rgba(0, 0, 0, .2);
+}
+
+.button-danger:hover {
+    background: #fc1e65;
 }
 
 .form-field {
@@ -467,7 +485,7 @@ ul {
     background-color: #fff;
     width: 600px;
     max-width: 75rem;
-    min-height: 20rem;
+    min-height: 15rem;
     padding: 1rem;
     border-radius: 3px;
     opacity: 0;
@@ -506,6 +524,8 @@ ul {
     backface-visibility: hidden;
     transition: opacity 0.6s cubic-bezier(0.55, 0, 0.1, 1);
     transition-delay: 0.3s;
+    text-align: center;
+    border: none;
 }
 
 .modal-hang-up.active {
@@ -515,11 +535,11 @@ ul {
     transform: scale(1);
 }
 
-.modal.active .modal-content {
+.modal-hang-up.active .modal-content {
     opacity: 1;
 }
 
-.modal.active .close-modal {
+.modal-hang-up.active .close-modal {
     -webkit-transform: translateY(10px);
     transform: translateY(10px);
     opacity: 1;
