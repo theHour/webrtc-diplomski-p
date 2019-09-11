@@ -5,8 +5,26 @@ var inputRoomNumber = document.getElementById("roomNumber");
 var btnGoRoom = document.getElementById("goRoom");
 var localVideo = document.getElementById("localVideo");
 var remoteVideo = document.getElementById("remoteVideo");
-var chartArea = document.getElementById('chat');
-var currentDate = document.getElementById('current-date');
+var chartArea = document.getElementById("chat");
+var currentDate = document.getElementById("current-date");
+var hangUp = document.getElementById("hangUpButton");
+
+var openModal = document.getElementById("openHangUpModal");
+var closeModal = document.getElementById("closeHangUpModal");
+var modal =  document.getElementById("modal");
+var modalOverlay =  document.getElementById("modal-overlay");
+
+openModal.onclick = function () {
+    modalOverlay.classList.toggle('active');
+    modal.classList.toggle('active');
+};
+
+closeModal.onclick = function () {
+    modalOverlay.classList.remove('active');
+    modal.classList.remove('active');
+};
+
+
 
 const textArea = document.getElementById("textArea");
 const messages = document.getElementById("messages");
@@ -21,8 +39,8 @@ currentDate.innerText = today;
 
 
 textArea.addEventListener('keypress', event => {
-  if (event.keyCode === 13) {
-    messages.innerHTML += `
+    if (event.keyCode === 13) {
+        messages.innerHTML += `
        <li class="chat-right">									
             <div class="chat-text">${textArea.value.trim()}</div>
             <div class="chat-avatar">
@@ -30,21 +48,22 @@ textArea.addEventListener('keypress', event => {
                 <div class="chat-name">YOU</div>
             </div>
         </li>`;
-    if (isCaller) {
-      dataChannel.send(textArea.value.trim())
-    } else {
-      receiveChannel.send(textArea.value.trim())
-    }
-    textArea.value = ''
+        messages.scrollTop = messages.scrollHeight
+        if (isCaller) {
+            dataChannel.send(textArea.value.trim())
+        } else {
+            receiveChannel.send(textArea.value.trim())
+        }
+        textArea.value = ''
 
-  }
+    }
 })
 
 // variables
-var roomNumber;
-var localStream;
-var remoteStream;
-var rtcPeerConnection, dataChannel, receiveChannel;
+let roomNumber;
+let localStream;
+let remoteStream;
+let rtcPeerConnection, dataChannel, receiveChannel;
 var iceServers = {
     'iceServers': [
         { 'urls': 'stun:stun.services.mozilla.com' },
@@ -52,11 +71,11 @@ var iceServers = {
     ]
 }
 var streamConstraints = {
-  audio: true,
-  video: {
-    width: 640,
-    height: 320
-  }
+    audio: true,
+    video: {
+        width: 640,
+        height: 320
+    }
 };
 var isCaller;
 
@@ -75,7 +94,14 @@ btnGoRoom.onclick = function () {
     }
 };
 
-// message handlers
+hangUp.onclick = function () {
+    rtcPeerConnection.close();
+    rtcPeerConnection = null;
+    socket.emit('leave', roomNumber);
+    window.alert(`You are leaving the room and you will be redirected to landing page!`);
+    window.location.reload();
+}
+
 socket.on('created', function (room) {
     navigator.mediaDevices.getUserMedia(streamConstraints).then(function (stream) {
         localStream = stream;
@@ -111,6 +137,10 @@ socket.on('ready', function () {
         dataChannel.onopen = handleSendChannelStatusChange;
         dataChannel.onclose = handleSendChannelStatusChange;
         dataChannel.onmessage = handleReceiveMessage;
+        sendFileChannel = rtcPeerConnection.createDataChannel("sendDataChannel")
+        sendFileChannel.onopen = handleSendChannelStatusChange;
+        sendFileChannel.onclose = handleSendChannelStatusChange;
+        sendFileChannel.onmessage = handleReceiveMessage;
         rtcPeerConnection.onicecandidate = onIceCandidate;
         rtcPeerConnection.ontrack = onAddStream;
         rtcPeerConnection.addTrack(localStream.getTracks()[0], localStream);
@@ -158,6 +188,25 @@ socket.on('answer', function (event) {
     rtcPeerConnection.setRemoteDescription(new RTCSessionDescription(event));
 })
 
+socket.on('full', function (event) {
+    divSelectRoom.style = "display: block;";
+    divConsultingRoom.style = "display: none;";
+    chartArea.style = "display: none";
+    alert(`Room is full. Please enter another room id.`)
+})
+
+socket.on('left', function (event) {
+    rtcPeerConnection.close();
+    rtcPeerConnection = null;
+    alert(`Peer left the room. You will be redirected to landing page!`)
+    window.location.reload();
+})
+
+socket.on('file', function (event) {
+    fileSize = event.fileSize;
+    name = event.name;
+});
+
 // handler functions
 function onIceCandidate(event) {
     if (event.candidate) {
@@ -178,27 +227,34 @@ function onAddStream(event) {
 }
 
 function handleSendChannelStatusChange(event) {
-  if (dataChannel) {
-    var state = dataChannel.readyState;
+    if (dataChannel) {
+        var state = dataChannel.readyState;
 
-    if (state === "open") {
-      console.log('data channel opened')
-    } else {
-      console.log('data channel something went wrong :O')
+        if (state === "open") {
+            console.log('data channel opened')
+        } else {
+            console.log('data channel something went wrong :O')
+        }
     }
-  }
 }
 
 function receiveChannelCallback(event) {
-  receiveChannel = event.channel;
-  receiveChannel.onmessage = handleReceiveMessage;
-  receiveChannel.onopen = handleReceiveChannelStatusChange;
-  receiveChannel.onclose = handleReceiveChannelStatusChange;
+    if (event.channel.label === 'sendDataChannel') {
+        receiveFileChannelCallback(event);
+    } else {
+        receiveChannel = event.channel;
+        receiveChannel.onmessage = handleReceiveMessage;
+        receiveChannel.onopen = handleReceiveChannelStatusChange;
+        receiveChannel.onclose = handleReceiveChannelStatusChange;
+    }
 }
 
 function handleReceiveMessage(event) {
-  console.log(`message received: `, event.data)
-  messages.innerHTML += `<li class="chat-left">
+    if (event.target.label === 'sendDataChannel') {
+        onReceiveFileMessageCallback(event)
+    } else {
+        console.log(`message received: `, event.data)
+        messages.innerHTML += `<li class="chat-left">
         <div class="chat-avatar">
             <img src="/images/avatar-2.png" alt="ANON">
             <div class="chat-name">ANON</div>
@@ -206,20 +262,159 @@ function handleReceiveMessage(event) {
         <div class="chat-text">${event.data}</div>
         <div class="chat-hour"><span class="icon-done_all"></span></div>
     </li>`;
-  textArea.value = ''
+        textArea.value = '';
+        messages.scrollTop = messages.scrollHeight
+    }
 }
 
 function handleReceiveChannelStatusChange(event) {
-  if (receiveChannel) {
-    console.log("Receive channel's status has changed to " +
-                receiveChannel.readyState);
-  }
+    if (receiveChannel) {
+        console.log("Receive channel's status has changed to " +
+            receiveChannel.readyState);
+    }
 }
 
-function sendMessageCaller() {
 
+///file transfer
+const fileInput = document.querySelector('input#fileInput');
+const abortButton = document.querySelector('button#abortButton');
+const sendFileButton = document.querySelector('button#sendFile');
+
+let sendFileChannel;
+let receiveFileChannel;
+let fileReader;
+const downloadAnchor = document.querySelector('a#download');
+let receiveBuffer = [];
+let receivedSize = 0;
+let fileSize = 0;
+let name = '';
+
+sendFileButton.addEventListener('click', () => createConnection());
+fileInput.addEventListener('change', handleFileInputChange, false);
+abortButton.addEventListener('click', () => {
+    if (fileReader && fileReader.readyState === 1) {
+        console.log('Abort read!');
+        fileReader.abort();
+    }
+});
+
+async function handleFileInputChange() {
+    let file = fileInput.files[0];
+    if (!file) {
+        console.log('No file chosen');
+    } else {
+        socket.emit('expected', {
+            room: roomNumber,
+            fileSize: file.size,
+            name: file.name
+        })
+        sendFileButton.disabled = false;
+    }
 }
 
-function sendMessageReceiver() {
 
+async function createConnection() {
+    abortButton.disabled = false;
+    sendFileButton.disabled = true;
+    console.log(`Sending file data.`)
+    sendData();
+    fileInput.disabled = true;
+}
+
+function sendData() {
+    if (isCaller) {
+        sendChannelData(sendFileChannel);
+    } else {
+        sendChannelData(receiveFileChannel);
+    }
+}
+
+function sendChannelData(channel) {
+    const file = fileInput.files[0];
+    console.log(`File is ${[file.name, file.size, file.type, file.lastModified].join(' ')}`);
+
+    // Handle 0 size files.
+    downloadAnchor.textContent = '';
+    if (file.size === 0) {
+        alert(`Please select a file before sending.`)
+        return;
+    }
+    const chunkSize = 16384;
+    fileReader = new FileReader();
+    let offset = 0;
+    fileReader.addEventListener('error', error => console.error('Error reading file:', error));
+    fileReader.addEventListener('abort', event => console.log('File reading aborted:', event));
+    fileReader.addEventListener('load', e => {
+        console.log('FileRead.onload ', e);
+        channel.send(e.target.result);
+        offset += e.target.result.byteLength;
+        if (offset < file.size) {
+            readSlice(offset);
+        } else {
+            sendFileButton.disabled = false;
+            fileInput.disabled = false;
+        }
+    });
+    const readSlice = o => {
+        console.log('readSlice ', o);
+        const slice = file.slice(offset, o + chunkSize);
+        fileReader.readAsArrayBuffer(slice);
+    };
+    readSlice(0);
+}
+
+function closeDataChannels() {
+    // re-enable the file select
+    fileInput.disabled = false;
+    sendFileButton.disabled = false;
+}
+
+
+function receiveFileChannelCallback( event) {
+    console.log('Receive Channel Callback');
+    receiveFileChannel = event.channel;
+    receiveFileChannel.binaryType = 'arraybuffer';
+    receiveFileChannel.onmessage = onReceiveFileMessageCallback;
+    receiveFileChannel.onopen = onReceiveFileChannelStateChange;
+    receiveFileChannel.onclose = onReceiveFileChannelStateChange;
+
+    downloadAnchor.textContent = '';
+    downloadAnchor.removeAttribute('download');
+    if (downloadAnchor.href) {
+        URL.revokeObjectURL(downloadAnchor.href);
+        downloadAnchor.removeAttribute('href');
+    }
+}
+
+function onReceiveFileMessageCallback(event) {
+    console.log(`Received Message ${event.data.byteLength}`);
+    receiveBuffer.push(event.data);
+    receivedSize += event.data.byteLength;
+
+    // we are assuming that our signaling protocol told
+    // about the expected file size (and name, hash, etc).
+    if (receivedSize === fileSize) {
+        const received = new Blob(receiveBuffer);
+        receiveBuffer = [];
+
+        downloadAnchor.href = URL.createObjectURL(received);
+        downloadAnchor.download = name;
+        downloadAnchor.textContent =
+            `Click to download '${name}' (${fileSize} bytes)`;
+        downloadAnchor.style.display = 'block';
+        fileSize = 0;
+    }
+}
+
+function onSendFileChannelStateChange() {
+    const readyState = sendFileChannel.readyState;
+    console.log(`Send channel state is: ${readyState}`);
+    if (readyState === 'open') {
+        sendData();
+    }
+}
+
+async function onReceiveFileChannelStateChange() {
+    const readyState = receiveFileChannel.readyState;
+    console.log(`Receive channel state is: ${readyState}`);
 }
