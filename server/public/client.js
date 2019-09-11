@@ -5,9 +5,25 @@ var inputRoomNumber = document.getElementById("roomNumber");
 var btnGoRoom = document.getElementById("goRoom");
 var localVideo = document.getElementById("localVideo");
 var remoteVideo = document.getElementById("remoteVideo");
-var chartArea = document.getElementById('chat');
-var currentDate = document.getElementById('current-date');
+var chartArea = document.getElementById("chat");
+var currentDate = document.getElementById("current-date");
 var hangUp = document.getElementById("hangUpButton");
+
+var openModal = document.getElementById("openHangUpModal");
+var closeModal = document.getElementById("closeHangUpModal");
+var modal = document.getElementById("modal");
+var modalOverlay = document.getElementById("modal-overlay");
+
+openModal.onclick = function () {
+    modalOverlay.classList.toggle('active');
+    modal.classList.toggle('active');
+};
+
+closeModal.onclick = function () {
+    modalOverlay.classList.remove('active');
+    modal.classList.remove('active');
+};
+
 
 const textArea = document.getElementById("textArea");
 const messages = document.getElementById("messages");
@@ -49,8 +65,8 @@ let remoteStream;
 let rtcPeerConnection, dataChannel, receiveChannel;
 var iceServers = {
     'iceServers': [
-        { 'urls': 'stun:stun.services.mozilla.com' },
-        { 'urls': 'stun:stun.l.google.com:19302' }
+        {'urls': 'stun:stun.services.mozilla.com'},
+        {'urls': 'stun:stun.l.google.com:19302'}
     ]
 }
 var streamConstraints = {
@@ -81,9 +97,8 @@ hangUp.onclick = function () {
     rtcPeerConnection.close();
     rtcPeerConnection = null;
     socket.emit('leave', roomNumber);
-    window.alert(`You are leaving the room and you will be redirected to landing page!`);
     window.location.reload();
-}
+};
 
 socket.on('created', function (room) {
     navigator.mediaDevices.getUserMedia(streamConstraints).then(function (stream) {
@@ -123,7 +138,7 @@ socket.on('ready', function () {
         sendFileChannel = rtcPeerConnection.createDataChannel("sendDataChannel")
         sendFileChannel.onopen = handleSendChannelStatusChange;
         sendFileChannel.onclose = handleSendChannelStatusChange;
-        sendFileChannel.onmessage = handleReceiveMessage;        
+        sendFileChannel.onmessage = handleReceiveMessage;
         rtcPeerConnection.onicecandidate = onIceCandidate;
         rtcPeerConnection.ontrack = onAddStream;
         rtcPeerConnection.addTrack(localStream.getTracks()[0], localStream);
@@ -237,7 +252,7 @@ function handleReceiveMessage(event) {
         onReceiveFileMessageCallback(event)
     } else {
         console.log(`message received: `, event.data)
-    messages.innerHTML += `<li class="chat-left">
+        messages.innerHTML += `<li class="chat-left">
         <div class="chat-avatar">
             <img src="/images/avatar-2.png" alt="ANON">
             <div class="chat-name">ANON</div>
@@ -245,8 +260,8 @@ function handleReceiveMessage(event) {
         <div class="chat-text">${event.data}</div>
         <div class="chat-hour"><span class="icon-done_all"></span></div>
     </li>`;
-    textArea.value = '';
-    messages.scrollTop = messages.scrollHeight
+        textArea.value = '';
+        messages.scrollTop = messages.scrollHeight
     }
 }
 
@@ -353,7 +368,7 @@ function closeDataChannels() {
 }
 
 
-function receiveFileChannelCallback( event) {
+function receiveFileChannelCallback(event) {
     console.log('Receive Channel Callback');
     receiveFileChannel = event.channel;
     receiveFileChannel.binaryType = 'arraybuffer';
