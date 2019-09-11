@@ -357,7 +357,7 @@ function receiveFileChannelCallback( event) {
     console.log('Receive Channel Callback');
     receiveFileChannel = event.channel;
     receiveFileChannel.binaryType = 'arraybuffer';
-    receiveFileChannel.onmessage = onReceiveFileMessageCallback;
+    receiveFileChannel.onmessage = handleReceiveMessage;
     receiveFileChannel.onopen = onReceiveFileChannelStateChange;
     receiveFileChannel.onclose = onReceiveFileChannelStateChange;
 
@@ -379,6 +379,7 @@ function onReceiveFileMessageCallback(event) {
     if (receivedSize === fileSize) {
         const received = new Blob(receiveBuffer);
         receiveBuffer = [];
+        receivedSize = 0;
 
         downloadAnchor.href = URL.createObjectURL(received);
         downloadAnchor.download = name;
