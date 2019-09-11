@@ -47,6 +47,17 @@ io.on('connection', function (socket) {
         socket.broadcast.to(event.room).emit('answer',event.sdp);
     });
 
+    socket.on('expected', function(event) {
+        console.log(`expected file size: ${event.fileSize} ; name: ${event.name}`)
+        socket.broadcast.to(event.room).emit('file', {fileSize: event.fileSize, name: event.name})
+    })
+
+    socket.on('leave', function (room) {
+        socket.leave(room);
+        console.log('left the room');
+        socket.broadcast.to(room).emit('left');
+    })
+
 });
 
 // listener
