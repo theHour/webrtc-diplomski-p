@@ -11,8 +11,8 @@ var hangUp = document.getElementById("hangUpButton");
 
 var openModal = document.getElementById("openHangUpModal");
 var closeModal = document.getElementById("closeHangUpModal");
-var modal =  document.getElementById("modal");
-var modalOverlay =  document.getElementById("modal-overlay");
+var modal = document.getElementById("modal");
+var modalOverlay = document.getElementById("modal-overlay");
 
 openModal.onclick = function () {
     modalOverlay.classList.toggle('active');
@@ -23,7 +23,6 @@ closeModal.onclick = function () {
     modalOverlay.classList.remove('active');
     modal.classList.remove('active');
 };
-
 
 
 const textArea = document.getElementById("textArea");
@@ -66,8 +65,8 @@ let remoteStream;
 let rtcPeerConnection, dataChannel, receiveChannel;
 var iceServers = {
     'iceServers': [
-        { 'urls': 'stun:stun.services.mozilla.com' },
-        { 'urls': 'stun:stun.l.google.com:19302' }
+        {'urls': 'stun:stun.services.mozilla.com'},
+        {'urls': 'stun:stun.l.google.com:19302'}
     ]
 }
 var streamConstraints = {
@@ -98,9 +97,8 @@ hangUp.onclick = function () {
     rtcPeerConnection.close();
     rtcPeerConnection = null;
     socket.emit('leave', roomNumber);
-    window.alert(`You are leaving the room and you will be redirected to landing page!`);
     window.location.reload();
-}
+};
 
 socket.on('created', function (room) {
     navigator.mediaDevices.getUserMedia(streamConstraints).then(function (stream) {
@@ -370,7 +368,7 @@ function closeDataChannels() {
 }
 
 
-function receiveFileChannelCallback( event) {
+function receiveFileChannelCallback(event) {
     console.log('Receive Channel Callback');
     receiveFileChannel = event.channel;
     receiveFileChannel.binaryType = 'arraybuffer';
