@@ -200,7 +200,7 @@ ul {
     font-weight: 300;
     line-height: 150%;
     position: relative;
-    max-width: 60%;
+    /*max-width: 60%;*/
 }
 
 .chat-container li .chat-text:before {
@@ -565,6 +565,16 @@ ul {
 
     .close-modal {
         right: 20px !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .video-mobile {
+        position: absolute;
+    }
+
+    .chat-container {
+        margin-top: 120px;
     }
 }
 
