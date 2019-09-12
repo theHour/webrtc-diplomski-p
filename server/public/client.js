@@ -1,3 +1,12 @@
+window.onload = function() {
+    setTimeout(function(){
+        $(".overlay").fadeOut(400);
+        $(".loader-spin").fadeOut(200);
+    },400);
+};
+
+
+
 // getting dom elements
 var divSelectRoom = document.getElementById("selectRoom");
 var divConsultingRoom = document.getElementById("consultingRoom");

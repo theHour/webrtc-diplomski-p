@@ -10,6 +10,14 @@
 </head>
 
 <body>
+<div class="overlay">
+    <div class="loader-spin">
+        <svg viewbox="25 25 50 50" class="circular">
+            <circle cx="50" cy="50" r="20" fill="none" stroke-width="4" stroke-miterlimit="10" class="path"></circle>
+        </svg>
+    </div>
+</div>
+
 <div id="selectRoom">
     <div class="select-room-wrapper">
         <div class="container">
@@ -131,6 +139,10 @@
         </div>
     </div>
 </div>
+<script
+        src="https://code.jquery.com/jquery-3.4.1.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+        crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"></script>
 <script src="client.js"></script>
 </body>
