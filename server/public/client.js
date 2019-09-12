@@ -1,10 +1,9 @@
-window.onload = function() {
-    setTimeout(function(){
+window.onload = function () {
+    setTimeout(function () {
         $(".overlay").fadeOut(400);
         $(".loader-spin").fadeOut(200);
-    },400);
+    }, 400);
 };
-
 
 
 // getting dom elements
@@ -283,9 +282,8 @@ function handleReceiveChannelStatusChange(event) {
 
 
 ///file transfer
-const fileInput = document.querySelector('input#fileInput');
-const abortButton = document.querySelector('button#abortButton');
-const sendFileButton = document.querySelector('button#sendFile');
+const fileInput = document.querySelector('#fileInput');
+const sendFileButton = document.getElementById('sendFile');
 
 let sendFileChannel;
 let receiveFileChannel;
@@ -298,12 +296,7 @@ let name = '';
 
 sendFileButton.addEventListener('click', () => createConnection());
 fileInput.addEventListener('change', handleFileInputChange, false);
-abortButton.addEventListener('click', () => {
-    if (fileReader && fileReader.readyState === 1) {
-        console.log('Abort read!');
-        fileReader.abort();
-    }
-});
+
 
 async function handleFileInputChange() {
     let file = fileInput.files[0];
@@ -314,15 +307,13 @@ async function handleFileInputChange() {
             room: roomNumber,
             fileSize: file.size,
             name: file.name
-        })
-        sendFileButton.disabled = false;
+        });
     }
+    sendFileButton.style.display = 'block';
 }
 
 
 async function createConnection() {
-    abortButton.disabled = false;
-    sendFileButton.disabled = true;
     console.log(`Sending file data.`)
     sendData();
     fileInput.disabled = true;
@@ -358,8 +349,8 @@ function sendChannelData(channel) {
         if (offset < file.size) {
             readSlice(offset);
         } else {
-            sendFileButton.disabled = false;
             fileInput.disabled = false;
+            sendFileButton.style.display = 'none';
         }
     });
     const readSlice = o => {
@@ -368,12 +359,6 @@ function sendChannelData(channel) {
         fileReader.readAsArrayBuffer(slice);
     };
     readSlice(0);
-}
-
-function closeDataChannels() {
-    // re-enable the file select
-    fileInput.disabled = false;
-    sendFileButton.disabled = false;
 }
 
 
@@ -411,6 +396,15 @@ function onReceiveFileMessageCallback(event) {
             `Click to download '${name}' (${fileSize} bytes)`;
         downloadAnchor.style.display = 'block';
         fileSize = 0;
+
+        messages.innerHTML += `<li class="chat-left">
+        <div class="chat-avatar">
+            <img src="/images/avatar-2.png" alt="ANON">
+            <div class="chat-name">ANON</div>
+        </div>
+        <div class="chat-text"><a href="${downloadAnchor}" download>${name}</a></div>
+        <div class="chat-hour"><span class="icon-done_all"></span></div>
+    </li>`
     }
 }
 

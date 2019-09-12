@@ -579,7 +579,7 @@ ul {
     }
 
     .chat-container {
-        margin-top: 120px;
+        margin-top: 130px;
     }
 }
 
@@ -729,6 +729,10 @@ ul {
         stroke-dasharray: 89, 200;
         stroke-dashoffset: -124px;
     }
+}
+
+#sendFile {
+    display: none;
 }
 
 

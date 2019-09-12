@@ -72,10 +72,8 @@
                                         <ul class="chat-box" id="messages">
                                         </ul>
                                         <div>
-
-                                            <a id="download"></a>
-                                            <button disabled id="abortButton">Abort</button>
-                                            <button disabled id="sendFile">Send</button>
+                                            <a id="download" class="d-none"></a>
+                                            <button class="button button-primary button-block uppercase" id="sendFile">Send</button>
                                         </div>
 
                                         <div class="form-group mt-3 mb-0">
@@ -83,12 +81,12 @@
                                                  <textarea class="form-control" name="Chat" id="textArea"
                                                            rows="3"></textarea>
                                                 <div class="image-upload">
-                                                    <label for="file-input" class="add-file">
+                                                    <label for="fileInput" class="add-file">
                                                         <img src="/images/attachment.png"/>
                                                     </label>
 
-                                                    <form id="fileInfo">
-                                                        <input class="file-input" id="file-input" type="file"/>
+                                                    <form>
+                                                        <input class="file-input" id="fileInput" type="file"/>
                                                     </form>
                                                 </div>
 
