@@ -145,7 +145,8 @@ ul {
 .chat-container {
     position: relative;
     padding: 1rem;
-    height: calc(100vh - 220px)
+    height: calc(100vh - 220px);
+    margin-bottom: 30px;
 }
 
 .chat-container .chat-box {
@@ -568,14 +569,56 @@ ul {
     }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 860px) {
     .video-mobile {
         position: absolute;
+    }
+
+    .content-wrapper {
+        padding: 0.5rem;
     }
 
     .chat-container {
         margin-top: 120px;
     }
+}
+
+.chat-textarea {
+    position: relative;
+    margin-bottom: 10px;
+}
+
+.chat-textarea textarea {
+    /*height: 60px;*/
+    width: 100%;
+    padding-left: 10px;
+    border-radius: 4px;
+    outline: none;
+    resize: none;
+    padding-right: 50px;
+}
+
+.chat-textarea .add-file {
+    position: absolute;
+    right: 32px;
+    top: 15px;
+    border: none;
+    height: 20px;
+    border-radius: 100%;
+    outline: none;
+    text-align: center;
+    font-weight: bold;
+    padding: 2px;
+    width: 25px;
+}
+
+.image-upload input.file-input {
+    display: none;
+}
+
+.image-upload img {
+    width: 25px;
+    cursor: pointer;
 }
 
 

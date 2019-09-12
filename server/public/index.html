@@ -3,6 +3,7 @@
 <head>
     <title>WebRTC - Web Real Time Communication</title>
     <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+    <meta name=viewport content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/css/font-awesome-4.7.0/css/font-awesome.min.css">
@@ -58,25 +59,36 @@
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                         <div class="card m-0">
                             <div class="row no-gutters">
-                                <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 col-8">
+                                <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 col-12">
                                     <div class="chat-container">
                                         <ul class="chat-box" id="messages">
                                         </ul>
                                         <div>
-                                            <form id="fileInfo">
-                                                <input type="file" id="fileInput" name="files"/>
-                                            </form>
-                                            <button disabled id="sendFile">Send</button>
+
+                                            <a id="download"></a>
                                             <button disabled id="abortButton">Abort</button>
+                                            <button disabled id="sendFile">Send</button>
                                         </div>
-                                        <a id="download"></a>
+
                                         <div class="form-group mt-3 mb-0">
-                                                <textarea class="form-control" name="Chat" id="textArea"
-                                                          rows="3"></textarea>
+                                            <div class="chat-textarea">
+                                                 <textarea class="form-control" name="Chat" id="textArea"
+                                                           rows="3"></textarea>
+                                                <div class="image-upload">
+                                                    <label for="file-input" class="add-file">
+                                                        <img src="/images/attachment.png"/>
+                                                    </label>
+
+                                                    <form id="fileInfo">
+                                                        <input class="file-input" id="file-input" type="file"/>
+                                                    </form>
+                                                </div>
+
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 col-4 video-mobile">
+                                <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 col-12 video-mobile">
                                     <div class="users-container">
                                         <div id="consultingRoom" style="display:none">
                                             <div class="row">
