@@ -7,20 +7,20 @@ window.onload = function () {
 
 
 // getting dom elements
-var divSelectRoom = document.getElementById("selectRoom");
-var divConsultingRoom = document.getElementById("consultingRoom");
-var inputRoomNumber = document.getElementById("roomNumber");
-var btnGoRoom = document.getElementById("goRoom");
-var localVideo = document.getElementById("localVideo");
-var remoteVideo = document.getElementById("remoteVideo");
-var chartArea = document.getElementById("chat");
-var currentDate = document.getElementById("current-date");
-var hangUp = document.getElementById("hangUpButton");
+let divSelectRoom = document.getElementById("selectRoom");
+let divConsultingRoom = document.getElementById("consultingRoom");
+let inputRoomNumber = document.getElementById("roomNumber");
+let btnGoRoom = document.getElementById("goRoom");
+let localVideo = document.getElementById("localVideo");
+let remoteVideo = document.getElementById("remoteVideo");
+let chartArea = document.getElementById("chat");
+let currentDate = document.getElementById("current-date");
+let hangUp = document.getElementById("hangUpButton");
 
-var openModal = document.getElementById("openHangUpModal");
-var closeModal = document.getElementById("closeHangUpModal");
-var modal = document.getElementById("modal");
-var modalOverlay = document.getElementById("modal-overlay");
+let openModal = document.getElementById("openHangUpModal");
+let closeModal = document.getElementById("closeHangUpModal");
+let modal = document.getElementById("modal");
+let modalOverlay = document.getElementById("modal-overlay");
 
 openModal.onclick = function () {
     modalOverlay.classList.toggle('active');
@@ -36,18 +36,19 @@ closeModal.onclick = function () {
 const textArea = document.getElementById("textArea");
 const messages = document.getElementById("messages");
 
-var today = new Date();
-var dd = String(today.getDate()).padStart(2, '0');
-var mm = String(today.getMonth() + 1).padStart(2, '0');
-var yyyy = today.getFullYear();
+let today = new Date();
+let dd = String(today.getDate()).padStart(2, '0');
+let mm = String(today.getMonth() + 1).padStart(2, '0');
+let yyyy = today.getFullYear();
 
 today = mm + '/' + dd + '/' + yyyy;
 currentDate.innerText = today;
 
 
 textArea.addEventListener('keypress', event => {
-    if (event.keyCode === 13) {
-        messages.innerHTML += `
+    if (event.keyCode === 13 && !event.shiftKey) {
+        if (textArea.value !== `\n` && textArea.value.length !== 1) {
+            messages.innerHTML += `
        <li class="chat-right">									
             <div class="chat-text">${textArea.value.trim()}</div>
             <div class="chat-avatar">
@@ -55,39 +56,55 @@ textArea.addEventListener('keypress', event => {
                 <div class="chat-name">YOU</div>
             </div>
         </li>`;
-        messages.scrollTop = messages.scrollHeight
-        if (isCaller) {
-            dataChannel.send(textArea.value.trim())
-        } else {
-            receiveChannel.send(textArea.value.trim())
+            messages.scrollTop = messages.scrollHeight
+            if (isCaller) {
+                dataChannel.send(textArea.value.trim())
+            } else {
+                receiveChannel.send(textArea.value.trim())
+            }
         }
+        textArea.selectionStart = 0;
+        textArea.selectionEnd = 0;
         textArea.value = ''
-
     }
 })
 
-// variables
+inputRoomNumber.addEventListener('keypress', event => {
+    if (event.keyCode === 13) {
+        if (inputRoomNumber.value === '') {
+            alert("Please type a room number")
+        } else {
+            roomNumber = inputRoomNumber.value;
+            socket.emit('create or join', roomNumber);
+            divSelectRoom.style = "display: none;";
+            divConsultingRoom.style = "display: block;";
+            chartArea.style = "display: block";
+        }
+    }
+})
+
+// letiables
 let roomNumber;
 let localStream;
 let remoteStream;
 let rtcPeerConnection, dataChannel, receiveChannel;
-var iceServers = {
+const iceServers = {
     'iceServers': [
-        {'urls': 'stun:stun.services.mozilla.com'},
-        {'urls': 'stun:stun.l.google.com:19302'}
+        { 'urls': 'stun:stun.services.mozilla.com' },
+        { 'urls': 'stun:stun.l.google.com:19302' }
     ]
 }
-var streamConstraints = {
+const streamConstraints = {
     audio: true,
     video: {
-        width: 640,
-        height: 320
+        width: { max: 640 },
+        height: { max: 320 }
     }
 };
-var isCaller;
+let isCaller;
 
 // Let's do this
-var socket = io();
+let socket = io();
 
 btnGoRoom.onclick = function () {
     if (inputRoomNumber.value === '') {
@@ -102,6 +119,9 @@ btnGoRoom.onclick = function () {
 };
 
 hangUp.onclick = function () {
+    if (!rtcPeerConnection) {
+        window.location.reload();
+    }
     rtcPeerConnection.close();
     rtcPeerConnection = null;
     socket.emit('leave', roomNumber);
@@ -129,7 +149,7 @@ socket.on('joined', function (room) {
 });
 
 socket.on('candidate', function (event) {
-    var candidate = new RTCIceCandidate({
+    const candidate = new RTCIceCandidate({
         sdpMLineIndex: event.label,
         candidate: event.candidate
     });
@@ -234,7 +254,7 @@ function onAddStream(event) {
 
 function handleSendChannelStatusChange(event) {
     if (dataChannel) {
-        var state = dataChannel.readyState;
+        const state = dataChannel.readyState;
 
         if (state === "open") {
             console.log('data channel opened')
@@ -405,6 +425,8 @@ function onReceiveFileMessageCallback(event) {
         <div class="chat-text"><a href="${downloadAnchor}" download>${name}</a></div>
         <div class="chat-hour"><span class="icon-done_all"></span></div>
     </li>`
+        messages.scrollTop = messages.scrollHeight
+
     }
 }
 
