@@ -601,7 +601,7 @@ ul {
 .chat-textarea .add-file {
     position: absolute;
     right: 32px;
-    top: 15px;
+    top: 50%;
     border: none;
     height: 20px;
     border-radius: 100%;
@@ -610,6 +610,7 @@ ul {
     font-weight: bold;
     padding: 2px;
     width: 25px;
+    transform: translate(-50%, -50%);
 }
 
 .image-upload input.file-input {
