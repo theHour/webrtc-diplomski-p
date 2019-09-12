@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <head>
     <title>WebRTC - Web Real Time Communication</title>
     <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
@@ -8,7 +7,6 @@
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/css/font-awesome-4.7.0/css/font-awesome.min.css">
 </head>
-
 <body>
 <div class="overlay">
     <div class="loader-spin">
@@ -46,72 +44,82 @@
     </div>
 </div>
 
-<div id="chat"  style="display:none">
-    <div class="container">
-        <div class="main-container">
-            <div class="page-title">
-                <div class="row gutters">
-                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-8 col-8">
-                        <h5 class="title">WebRTC - Web Real Time Communication</h5>
-                    </div>
-                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-4 col-4">
-                        <div class="date">
-                            <i class="fa fa-calendar" aria-hidden="true"></i>
-                            <span class="current-date" id="current-date"></span>
+<div id="chat" class="p-fixed" style="display:none">
+    <div class="container-fluid" style="display: block">
+        <div class="row justify-content-center">
+            <div class="col-md-12 col-xl-4 chat">
+                <div class="card chatarea_card" style="background-color: transparent !important;">
+                    <!--<div class="card-header">-->
+                    <!--<div class="row gutters">-->
+                    <!--<div class="col-xl-6 col-lg-6 col-md-6 col-sm-8 col-8">-->
+                    <!--<h5 class="title">WebRTC - Web Real Time Communication</h5>-->
+                    <!--</div>-->
+                    <!--<div class="col-xl-6 col-lg-6 col-md-6 col-sm-4 col-4">-->
+                    <!--<div class="date">-->
+                    <!--<i class="fa fa-calendar" aria-hidden="true"></i>-->
+                    <!--<span class="current-date" id="current-date"></span>-->
+                    <!--</div>-->
+                    <!--</div>-->
+                    <!--</div>-->
+                    <!--</div>-->
+                    <div class="card-body chatarea_body" style="padding: 8px 36px;">
+                        <div id="consultingRoom" style="display:none">
+                            <div class="row">
+                                <div class="col-md-6 col-lg-12">
+                                    <div class="videoWrapper">
+                                        <video id="localVideo" autoplay></video>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-lg-12 pt-4">
+                                    <div class="videoWrapper">
+                                        <video id="remoteVideo" autoplay></video>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="content-wrapper">
-                <div class="row gutters">
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                        <div class="card m-0">
-                            <div class="row no-gutters">
-                                <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 col-12">
-                                    <div class="chat-container">
-                                        <ul class="chat-box" id="messages">
-                                        </ul>
-                                        <div>
-                                            <a id="download" class="d-none"></a>
-                                            <button class="button button-primary button-block uppercase" id="sendFile">Send</button>
-                                        </div>
-
-                                        <div class="form-group mt-3 mb-0">
-                                            <div class="chat-textarea">
-                                                 <textarea class="form-control" name="Chat" id="textArea"
-                                                           rows="3"></textarea>
-                                                <div class="image-upload">
-                                                    <label for="fileInput" class="add-file">
-                                                        <img src="/images/attachment.png"/>
-                                                    </label>
-
-                                                    <form>
-                                                        <input class="file-input" id="fileInput" type="file"/>
-                                                    </form>
-                                                </div>
-
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 col-12 video-mobile">
-                                    <div class="users-container">
-                                        <div id="consultingRoom" style="display:none">
-                                            <div class="row">
-                                                <div class="col-md-12 col-sm-6 mb-5">
-                                                    <video class="video" id="localVideo" autoplay></video>
-                                                    <div class="call-options">
-                                                        <a class="hang-up-btn" id="openHangUpModal"><img
-                                                                src="/images/hang-up-icon.png" alt=""></a>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-12 col-sm-6">
-                                                    <video class="video" id="remoteVideo" autoplay></video>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+            <div class="col-md-12 col-xl-8 chat chat-wrapper">
+                <div class="card card-chat">
+                    <div class="card-header msg_head">
+                        <div class="d-flex bd-highlight">
+                            <div class="img_cont">
+                                <img src="/images/avatar-2.png"
+                                     class="rounded-circle user_img">
+                                <span class="online_icon"></span>
+                            </div>
+                            <div class="user_info">
+                                <span>ANON</span>
+                                <p>0 Messages</p>
+                            </div>
+                            <div class="video_cam">
+                                <span>
+                                    <a id="download" class="d-none"></a>
+                                            <button class="button button-primary button-block uppercase" id="sendFile">
+                                                Send
+                                            </button>
+                                </span>
+                            </div>
+                        </div>
+                        <span id="action_menu_btn">
+                            <span class="call-options">
+                                            <a class="hang-up-btn" id="openHangUpModal"><img
+                                                    src="/images/hang-up-icon.png" alt=""></a>
+                                        </span>
+                        </span>
+                    </div>
+                    <div class="card-body msg_card_body" id="messages">
+                    </div>
+                    <div class="card-footer">
+                        <div class="input-group">
+                            <textarea name="" class="form-control type_msg" id="textArea"
+                                      placeholder="Type your message..."></textarea>
+                            <div class="input-group-append file-upload">
+                                <form>
+                                    <input class="file-input" id="fileInput" type="file"/>
+                                </form>
+                                <label for="fileInput" class="input-group-text send_btn"><i class="fa fa-paperclip"></i></label>
                             </div>
                         </div>
                     </div>
@@ -123,24 +131,20 @@
 
 <div class="modal-overlay" id="modal-overlay">
     <div class="modal-hang-up" id="modal">
-
         <a class="close-modal" id="closeHangUpModal">
             <svg viewBox="0 0 20 20">
                 <path fill="#000000"
                       d="M15.898,4.045c-0.271-0.272-0.713-0.272-0.986,0l-4.71,4.711L5.493,4.045c-0.272-0.272-0.714-0.272-0.986,0s-0.272,0.714,0,0.986l4.709,4.711l-4.71,4.711c-0.272,0.271-0.272,0.713,0,0.986c0.136,0.136,0.314,0.203,0.492,0.203c0.179,0,0.357-0.067,0.493-0.203l4.711-4.711l4.71,4.711c0.137,0.136,0.314,0.203,0.494,0.203c0.178,0,0.355-0.067,0.492-0.203c0.273-0.273,0.273-0.715,0-0.986l-4.711-4.711l4.711-4.711C16.172,4.759,16.172,4.317,15.898,4.045z"></path>
             </svg>
         </a>
-
         <div class="modal-content">
             <h3>Are you sure you want to end this call?</h3>
             <button id="hangUpButton" class="mt-4 button button-danger uppercase">End Call</button>
         </div>
     </div>
 </div>
-<script
-        src="https://code.jquery.com/jquery-3.4.1.min.js"
-        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
-        crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"></script>
 <script src="client.js"></script>
 </body>

@@ -6,6 +6,11 @@ window.onload = function () {
 };
 
 
+$('#action_menu_btn').click(function () {
+    $('.action_menu').toggle();
+});
+
+
 // getting dom elements
 let divSelectRoom = document.getElementById("selectRoom");
 let divConsultingRoom = document.getElementById("consultingRoom");
@@ -14,7 +19,7 @@ let btnGoRoom = document.getElementById("goRoom");
 let localVideo = document.getElementById("localVideo");
 let remoteVideo = document.getElementById("remoteVideo");
 let chartArea = document.getElementById("chat");
-let currentDate = document.getElementById("current-date");
+// let currentDate = document.getElementById("current-date");
 let hangUp = document.getElementById("hangUpButton");
 
 let openModal = document.getElementById("openHangUpModal");
@@ -36,26 +41,28 @@ closeModal.onclick = function () {
 const textArea = document.getElementById("textArea");
 const messages = document.getElementById("messages");
 
-let today = new Date();
-let dd = String(today.getDate()).padStart(2, '0');
-let mm = String(today.getMonth() + 1).padStart(2, '0');
-let yyyy = today.getFullYear();
-
-today = mm + '/' + dd + '/' + yyyy;
-currentDate.innerText = today;
+// let today = new Date();
+// let dd = String(today.getDate()).padStart(2, '0');
+// let mm = String(today.getMonth() + 1).padStart(2, '0');
+// let yyyy = today.getFullYear();
+//
+// today = mm + '/' + dd + '/' + yyyy;
+// currentDate.innerText = today;
 
 
 textArea.addEventListener('keypress', event => {
     if (event.keyCode === 13 && !event.shiftKey) {
         if (textArea.value !== `\n` && textArea.value.length !== 1) {
-            messages.innerHTML += `
-       <li class="chat-right">									
-            <div class="chat-text">${textArea.value.trim()}</div>
-            <div class="chat-avatar">
-                <img src="/images/avatar-1.png" alt="YOU">
-                <div class="chat-name">YOU</div>
-            </div>
-        </li>`;
+            messages.innerHTML += `<div class="d-flex justify-content-end mb-4">
+                            <div class="msg_cotainer_send">
+                                ${textArea.value.trim()}
+                                <span class="msg_time_send"></span>
+                            </div>
+                            <div class="img_cont_msg">
+                                <img src="/images/avatar-1.png"
+                                     class="rounded-circle user_img_msg">
+                            </div>
+                        </div>`;
             messages.scrollTop = messages.scrollHeight
             if (isCaller) {
                 dataChannel.send(textArea.value.trim())
@@ -78,7 +85,7 @@ inputRoomNumber.addEventListener('keypress', event => {
             socket.emit('create or join', roomNumber);
             divSelectRoom.style = "display: none;";
             divConsultingRoom.style = "display: block;";
-            chartArea.style = "display: block";
+            chartArea.style = "display: flex";
         }
     }
 })
@@ -90,15 +97,15 @@ let remoteStream;
 let rtcPeerConnection, dataChannel, receiveChannel;
 const iceServers = {
     'iceServers': [
-        { 'urls': 'stun:stun.services.mozilla.com' },
-        { 'urls': 'stun:stun.l.google.com:19302' }
+        {'urls': 'stun:stun.services.mozilla.com'},
+        {'urls': 'stun:stun.l.google.com:19302'}
     ]
 }
 const streamConstraints = {
     audio: true,
     video: {
-        width: { max: 640 },
-        height: { max: 320 }
+        width: {max: 640},
+        height: {max: 320}
     }
 };
 let isCaller;
@@ -114,7 +121,7 @@ btnGoRoom.onclick = function () {
         socket.emit('create or join', roomNumber);
         divSelectRoom.style = "display: none;";
         divConsultingRoom.style = "display: block;";
-        chartArea.style = "display: block";
+        chartArea.style = "display: flex";
     }
 };
 
@@ -280,14 +287,16 @@ function handleReceiveMessage(event) {
         onReceiveFileMessageCallback(event)
     } else {
         console.log(`message received: `, event.data)
-        messages.innerHTML += `<li class="chat-left">
-        <div class="chat-avatar">
-            <img src="/images/avatar-2.png" alt="ANON">
-            <div class="chat-name">ANON</div>
-        </div>
-        <div class="chat-text">${event.data}</div>
-        <div class="chat-hour"><span class="icon-done_all"></span></div>
-    </li>`;
+        messages.innerHTML += `<div class="d-flex justify-content-start mb-4">
+                            <div class="img_cont_msg">
+                                <img src="/images/avatar-2.png"
+                                     class="rounded-circle user_img_msg">
+                            </div>
+                            <div class="msg_cotainer">
+                               ${event.data}
+                                <span class="msg_time"></span>
+                            </div>
+                        </div>`;
         textArea.value = '';
         messages.scrollTop = messages.scrollHeight
     }
@@ -417,14 +426,16 @@ function onReceiveFileMessageCallback(event) {
         downloadAnchor.style.display = 'block';
         fileSize = 0;
 
-        messages.innerHTML += `<li class="chat-left">
-        <div class="chat-avatar">
-            <img src="/images/avatar-2.png" alt="ANON">
-            <div class="chat-name">ANON</div>
-        </div>
-        <div class="chat-text"><a href="${downloadAnchor}" download>${name}</a></div>
-        <div class="chat-hour"><span class="icon-done_all"></span></div>
-    </li>`
+        messages.innerHTML += `<div class="d-flex justify-content-start mb-4">
+                            <div class="img_cont_msg">
+                                <img src="/images/avatar-2.png"
+                                     class="rounded-circle user_img_msg">
+                            </div>
+                            <div class="msg_cotainer">
+                               <a href="${downloadAnchor}" download>${name}</a>
+                                <span class="msg_time"></span>
+                            </div>
+                        </div>`;
         messages.scrollTop = messages.scrollHeight
 
     }
