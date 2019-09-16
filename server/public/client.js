@@ -1,3 +1,6 @@
+/**
+ * loader
+ */
 window.onload = function () {
     setTimeout(function () {
         $(".overlay").fadeOut(400);
@@ -5,13 +8,20 @@ window.onload = function () {
     }, 400);
 };
 
+/**
+ * user left the chat
+ */
+window.onunload = function () {
+    leaveChat();
+}
+
 
 $('#action_menu_btn').click(function () {
     $('.action_menu').toggle();
 });
 
 
-// getting dom elements
+/// element selection
 let divSelectRoom = document.getElementById("selectRoom");
 let divConsultingRoom = document.getElementById("consultingRoom");
 let inputRoomNumber = document.getElementById("roomNumber");
@@ -19,37 +29,35 @@ let btnGoRoom = document.getElementById("goRoom");
 let localVideo = document.getElementById("localVideo");
 let remoteVideo = document.getElementById("remoteVideo");
 let chartArea = document.getElementById("chat");
-// let currentDate = document.getElementById("current-date");
 let hangUp = document.getElementById("hangUpButton");
-
 let openModal = document.getElementById("openHangUpModal");
 let closeModal = document.getElementById("closeHangUpModal");
 let modal = document.getElementById("modal");
 let modalOverlay = document.getElementById("modal-overlay");
 
+/**
+ * toggle modal
+ */
 openModal.onclick = function () {
     modalOverlay.classList.toggle('active');
     modal.classList.toggle('active');
 };
 
+/**
+ * close modal
+ */
 closeModal.onclick = function () {
     modalOverlay.classList.remove('active');
     modal.classList.remove('active');
 };
 
-
+/// chat elements
 const textArea = document.getElementById("textArea");
 const messages = document.getElementById("messages");
 
-// let today = new Date();
-// let dd = String(today.getDate()).padStart(2, '0');
-// let mm = String(today.getMonth() + 1).padStart(2, '0');
-// let yyyy = today.getFullYear();
-//
-// today = mm + '/' + dd + '/' + yyyy;
-// currentDate.innerText = today;
-
-
+/**
+ * textArea => send on enter
+ */
 textArea.addEventListener('keypress', event => {
     if (event.keyCode === 13 && !event.shiftKey) {
         if (textArea.value !== `\n` && textArea.value.length !== 1) {
@@ -76,8 +84,11 @@ textArea.addEventListener('keypress', event => {
     }
 })
 
-inputRoomNumber.addEventListener('keypress', event => {
-    if (event.keyCode === 13) {
+/**
+ * input room number 
+ */
+
+function selectRoom() {
         if (inputRoomNumber.value === '') {
             alert("Please type a room number")
         } else {
@@ -87,50 +98,53 @@ inputRoomNumber.addEventListener('keypress', event => {
             divConsultingRoom.style = "display: block;";
             chartArea.style = "display: flex";
         }
+}
+
+inputRoomNumber.addEventListener('keypress', event => {
+    if (event.keyCode === 13) {
+        selectRoom();
     }
 })
 
-// letiables
+btnGoRoom.onclick = function () {
+    selectRoom();
+};
+
+/// connection variables
 let roomNumber;
 let localStream;
 let remoteStream;
 let rtcPeerConnection, dataChannel, receiveChannel;
+
+/// ice server config; public google and mozillas 
 const iceServers = {
     'iceServers': [
         {'urls': 'stun:stun.services.mozilla.com'},
-        {'urls': 'stun:stun.l.google.com:19302'},
-        {
-            urls: 'turn:192.158.29.39:3478?transport=udp',
-            credential: 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
-            username: '28224511:1379330808'
-        }
+        {'urls': 'stun:stun.l.google.com:19302'}
     ]
 }
+
+/// stream constraints
 const streamConstraints = {
     audio: true,
     video: {
         width: {max: 640},
-        height: {max: 320}
+        height: {max: 320},
+        facingMode: 'user'
     }
 };
+
+/// who called who?!
 let isCaller;
 
 // Let's do this
 let socket = io();
 
-btnGoRoom.onclick = function () {
-    if (inputRoomNumber.value === '') {
-        alert("Please type a room number")
-    } else {
-        roomNumber = inputRoomNumber.value;
-        socket.emit('create or join', roomNumber);
-        divSelectRoom.style = "display: none;";
-        divConsultingRoom.style = "display: block;";
-        chartArea.style = "display: flex";
-    }
-};
 
-hangUp.onclick = function () {
+/**
+ * leave the chat - connection
+ */
+function leaveChat() {
     if (!rtcPeerConnection) {
         window.location.reload();
     }
@@ -138,6 +152,10 @@ hangUp.onclick = function () {
     rtcPeerConnection = null;
     socket.emit('leave', roomNumber);
     window.location.reload();
+}
+
+hangUp.onclick = function () {
+    leaveChat();
 };
 
 socket.on('created', function (room) {
@@ -417,8 +435,7 @@ function onReceiveFileMessageCallback(event) {
     receiveBuffer.push(event.data);
     receivedSize += event.data.byteLength;
 
-    // we are assuming that our signaling protocol told
-    // about the expected file size (and name, hash, etc).
+    // we are assuming that we recieved expected file size and file name through signalig server
     if (receivedSize === fileSize) {
         const received = new Blob(receiveBuffer);
         receiveBuffer = [];
